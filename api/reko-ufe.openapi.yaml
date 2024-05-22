@@ -1,0 +1,245 @@
+openapi: 3.0.0
+servers:
+  - description: Cluster Endpoint
+    url: /api
+info:
+  description: Reconvalescence support
+  version: '1.0.0'
+  title: Reconvalescence Support API
+  contact:
+    email: rasto.balcercik@gmail.com
+  license:
+    name: CC BY 4.0
+    url: 'https://creativecommons.org/licenses/by/4.0/'
+tags:
+  - name: reconvalescenceTicketList
+    description: Reconvalescence ticket list API
+paths:
+  '/reconvalescence-list/{userId}/entries':
+    get:
+      tags:
+        - reconvalescenceTicketList
+      summary: Provides the reconvalence list
+      operationId: getReconvalescenceList
+      description: By using userId you get list of reconvalescence tickets.
+      parameters:
+        - in: path
+          name: userId
+          description: pass the id of the particular user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns list of reconvalescence entries for the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReconvalescenceTicket'
+              examples:
+                response:
+                  $ref: '#/components/examples/ReconvalescenceTicketListExample'
+        '404':
+          description: User with such ID does not exist
+    post:
+      tags:
+        - reconvalescenceTicketList
+      summary: Saves new entry into Reconvalescence list
+      operationId: createReconvalescenceTicket
+      description: Use this method to store new entry into the reconvalescence list.
+      parameters:
+        - in: path
+          name: userId
+          description: pass the id of the particular user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconvalescenceTicket'
+            examples:
+              request-sample:
+                $ref: '#/components/examples/ReconvalescenceTicketExample'
+        description: Reconvalence ticket to store
+        required: true
+      responses:
+        '200':
+          description: Returns the stored reconvalescence ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconvalescenceTicket'
+              examples:
+                updated-response:
+                  $ref: '#/components/examples/ReconvalescenceTicketExample'
+        '400':
+          description: Bad request
+        '404':
+          description: Reconvalescence ticket with such ID does not exists
+        '409':
+          description: Entry with the specified id already exists
+  '/reconvalescence-list/{userId}/entries/{entryId}':
+    get:
+      tags:
+        - reconvalescenceTicketList
+      summary: Provides details about reconvalsescence ticket
+      operationId: getReconvalescenceTicket
+      description: Returns the details of the reconvalescence ticket
+      parameters:
+        - in: path
+          name: userId
+          description: pass the id of the particular user
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in reconvalsescence list
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the details of the reconvalescence ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconvalescenceTicket'
+              examples:
+                response:
+                  $ref: '#/components/examples/ReconvalescenceTicketExample'
+        '404':
+          description: User or reconvalescence ticket with such ID does not exist
+    put:
+      tags:
+        - reconvalescenceTicketList
+      summary: Updates specific entry
+      operationId: updateReconvalescenceTicket
+      description: Use this method to update content of the reconvalesncence ticket.
+      parameters:
+        - in: path
+          name: userId
+          description: pass the id of the particular ambulance
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in the waiting list
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconvalescenceTicket'
+            examples:
+              request:
+                $ref: '#/components/examples/ReconvalescenceTicketExample'
+        description: Waiting list entry to update
+        required: true
+      responses:
+        '200':
+          description: Returns the updated reconvalescence ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconvalescenceTicket'
+              examples:
+                response:
+                  $ref: '#/components/examples/ReconvalescenceTicketExample'
+        '403':
+          description: >-
+            Value of the entryID and the data id is mismatching. Details are
+            provided in the response body.
+        '404':
+          description: User or Reconvalescence ticket with such ID does not exists
+    delete:
+      tags:
+        - reconvalescenceTicketList
+      summary: Deletes specific reconvalescence ticket
+      operationId: deleteReconvalescenceTicket
+      description: Use this method to delete the specific reconvalescence ticket.
+      parameters:
+        - in: path
+          name: userId
+          description: pass the id of the particular user
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: entryId
+          description: pass the id of the particular entry in the reconvalsescence list
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Item deleted
+        '404':
+          description: User or Entry with such ID does not exists
+components:
+  schemas:
+    ReconvalescenceTicket:
+      type: object
+      required: [id, patientId, doctorId, message, surgeryDate]
+      properties:
+        id:
+          type: string
+          example: x321ab3
+          description: Unique id of the entry in the reconvalescence list
+        patientId:
+          type: string
+          example: jozko.mrkvicka
+          description: Unique identifier of the patient
+        doctorId:
+          type: string
+          example: dr.strange
+          description: Unique identifier of the doctor
+        message:
+          type: string
+          example: I took a surgery on my knee, it was successful, but it hurts a lot
+          description: Message from the patient to the doctor
+        reply: 
+          type: string
+          example: The pain is normal after surgery, take the painkillers and rest
+          description: Message from the doctor to the patient
+        surgeryDate:
+          type: string
+          format: date
+          example: '2038-12-24'
+          description: Timestamp when the user took the surgery or visited the doctor
+      example:
+        $ref: '#/components/examples/ReconvalescenceTicketExample'
+  examples:
+    ReconvalescenceTicketExample:
+      summary: Example of reconvalescence ticket
+      description: Example of reconvalescence ticket entry
+      value:
+        id: x321ab3
+        patientId: jozko.mrkvicka
+        doctorId: dr.strange
+        message: I took a surgery on my knee, it was successful, but it hurts a lot
+        reply: The pain is normal after surgery, take the painkillers and rest
+        surgeryDate: '2038-12-24'
+    ReconvalescenceTicketListExample:
+      summary: List of reconvalescence tickets
+      description: Example list of reconvalescence tickets
+      value:
+        - id: x321ab3
+          patientId: jozko.mrkvicka
+          doctorId: dr.strange
+          message: I took a surgery on my knee, it was successful, but it hurts a lot
+          reply: The pain is normal after surgery, take the painkillers and rest
+          surgeryDate: '2038-12-24'
+        - id: x321ab4
+          patientId: julia.mrkvicka
+          doctorId: dr.strange
+          message: I took a surgery on my knee, it was successful, but it hurts a lot
+          reply: The pain is normal after surgery, take the painkillers and rest
+          surgeryDate: '2038-12-24'
