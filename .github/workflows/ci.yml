@@ -32,7 +32,7 @@ jobs:
       with:
         # version: 7.0.0-beta - at time of writing this text only prerelease was available
         generator: go-gin-server
-        input: api/reko-wl.openapi.yaml
+        input: api/reko-ufe.openapi.yaml
         additional-properties: apiPath=internal/reconvalescence,packageName=reconvalescence
         template: scripts/templates
 
