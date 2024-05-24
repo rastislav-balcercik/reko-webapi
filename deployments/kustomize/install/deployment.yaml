@@ -55,8 +55,8 @@ spec:
               memory: "256Mi"
               cpu: "0.1"      
         containers:
-        - name: xbalcercik-ambulance-order-webapi-container
-          image: rbalcercik/reko-wl-webapi
+        - name: xbalcercik-ambulance-wl-webapi-container
+          image: rbalcercik/reko-wl-webapi:latest
           imagePullPolicy: Always
           ports:
           - name: webapi-port
